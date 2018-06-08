@@ -22,10 +22,26 @@ public class Hero : MonoBehaviour {
     bool isFacingLeft;
     protected Vector3 frontVector;
 
+    bool isJumpLandAnim;
+    bool isJumpingAnim;
+
+    public InputHandler input;
+
+    public float jumpForce = 1750;
+    private float jumpDuration = 0.2f;
+    private float lastJumpTime;
+
+    public bool isGrounded;
+
     void Update()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        isJumpLandAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_land");
+        isJumpingAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_rise") || 
+                                baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_fall");
+        
+        float h = input.GetHorisontalAxis();
+        float v = input.GetVerticalAxis();
+        bool jump = input.GetJumpButtonDown();
 
         currentDir = new Vector3(h, 0, v);
         currentDir.Normalize();
@@ -48,6 +64,37 @@ public class Hero : MonoBehaviour {
                 lastWalk = Time.time;
             }
         }
+
+        if (jump && !isJumpLandAnim &&
+            (isGrounded || (isJumpingAnim && Time.time < lastJumpTime + jumpDuration))) {
+            Jump(currentDir);
+        }
+
+        Vector3 shadowSpritePosition = shadowSprite.transform.position;
+        shadowSpritePosition.y = 0;
+        shadowSprite.transform.position = shadowSpritePosition;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.name == "Floor") {
+            isGrounded = true;
+            baseAnim.SetBool("IsGrounded", isGrounded);
+            DidLand();
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.collider.name == "Floor") {
+            isGrounded = false;
+            baseAnim.SetBool("IsGrounded", isGrounded);
+        }
+    }
+
+    void DidLand()
+    {
+        Walk();
     }
 
     void Walk() {
@@ -73,8 +120,11 @@ public class Hero : MonoBehaviour {
 
     void FixedUpdate() {
         Vector3 moveVector = currentDir * speed;
-        body.MovePosition(transform.position + moveVector * Time.fixedDeltaTime);
-        baseAnim.SetFloat("Speed", moveVector.magnitude);
+
+        if (isGrounded) {
+            body.MovePosition(transform.position + moveVector * Time.fixedDeltaTime);
+            baseAnim.SetFloat("Speed", moveVector.magnitude);    
+        }
 
         if (moveVector != Vector3.zero) {
             if (moveVector.x != 0) {
@@ -82,6 +132,18 @@ public class Hero : MonoBehaviour {
             }
             FlipSprite(isFacingLeft);
         }
+    }
+
+    void Jump(Vector3 direction) {
+        if (!isJumpingAnim) {
+            baseAnim.SetTrigger("Jump");
+            lastJumpTime = Time.time;
+            Vector3 horizontalVector = new Vector3(direction.x, 0, direction.z) * speed * 40;
+            body.AddForce(horizontalVector, ForceMode.Force);
+        }
+
+        Vector3 verticalVector = Vector3.up * jumpForce * Time.deltaTime;
+        body.AddForce(verticalVector, ForceMode.Force);
     }
 
     public void FlipSprite(bool isFacingLeft) {
