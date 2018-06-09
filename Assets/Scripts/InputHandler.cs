@@ -10,7 +10,7 @@ public class InputHandler : MonoBehaviour
     bool isJumping;
     public float maxJumpDuration = 0.2f;
 
-    public float GetVerticalAxis() 
+    public float GetVerticalAxis()
     {
         return vertical;
     }

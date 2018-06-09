@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hero : MonoBehaviour {
-    public Animator baseAnim;
-    public Rigidbody body;
-    public SpriteRenderer shadowSprite;
-
-    public float speed = 2;
+public class Hero : Actor {
+    
     public float walkSpeed = 2;
     public float runSpeed = 5;
 
@@ -20,7 +16,7 @@ public class Hero : MonoBehaviour {
 
     Vector3 currentDir;
     bool isFacingLeft;
-    protected Vector3 frontVector;
+
 
     bool isJumpLandAnim;
     bool isJumpingAnim;
@@ -31,10 +27,10 @@ public class Hero : MonoBehaviour {
     private float jumpDuration = 0.2f;
     private float lastJumpTime;
 
-    public bool isGrounded;
-
-    void Update()
+    public override void Update()
     {
+        base.Update();
+
         isJumpLandAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_land");
         isJumpingAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_rise") || 
                                 baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_fall");
@@ -69,31 +65,11 @@ public class Hero : MonoBehaviour {
             (isGrounded || (isJumpingAnim && Time.time < lastJumpTime + jumpDuration))) {
             Jump(currentDir);
         }
-
-        Vector3 shadowSpritePosition = shadowSprite.transform.position;
-        shadowSpritePosition.y = 0;
-        shadowSprite.transform.position = shadowSpritePosition;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    protected override void DidLand()
     {
-        if (collision.collider.name == "Floor") {
-            isGrounded = true;
-            baseAnim.SetBool("IsGrounded", isGrounded);
-            DidLand();
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.collider.name == "Floor") {
-            isGrounded = false;
-            baseAnim.SetBool("IsGrounded", isGrounded);
-        }
-    }
-
-    void DidLand()
-    {
+        base.DidLand();
         Walk();
     }
 
@@ -144,15 +120,5 @@ public class Hero : MonoBehaviour {
 
         Vector3 verticalVector = Vector3.up * jumpForce * Time.deltaTime;
         body.AddForce(verticalVector, ForceMode.Force);
-    }
-
-    public void FlipSprite(bool isFacingLeft) {
-        if (isFacingLeft) {
-            frontVector = new Vector3(-1, 0, 0);
-            transform.localScale = new Vector3(-1, 1, 1);
-        } else {
-            frontVector = new Vector3(1, 0, 0);
-            transform.localScale = new Vector3(1, 1, 1);
-        }
     }
 }
