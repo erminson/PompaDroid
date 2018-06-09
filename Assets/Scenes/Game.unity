@@ -581,12 +581,12 @@ MonoBehaviour:
   body: {fileID: 993526574}
   shadowSprite: {fileID: 1820662439}
   speed: 2
+  isGrounded: 0
   walkSpeed: 2
   runSpeed: 5
   canRun: 1
   input: {fileID: 781385815}
   jumpForce: 1750
-  isGrounded: 0
 --- !u!1 &1001632426
 GameObject:
   m_ObjectHideFlags: 0

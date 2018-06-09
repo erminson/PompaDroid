@@ -5,6 +5,7 @@ public class InputHandler : MonoBehaviour
     float horizontal;
     float vertical;
     bool jump;
+    bool attack;
 
     float lastJustTime;
     bool isJumping;
@@ -25,10 +26,16 @@ public class InputHandler : MonoBehaviour
         return jump;
     }
 
+    public bool GetAttackButtonDown()
+    {
+        return attack;
+    }
+
     private void Update()
     {
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
+        attack = Input.GetButtonDown("Attack");
 
         if (!jump && !isJumping && Input.GetButton("Jump")) {
             jump = true;
