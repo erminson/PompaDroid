@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Hero : Actor
 {
-
     public float walkSpeed = 2;
     public float runSpeed = 5;
 
