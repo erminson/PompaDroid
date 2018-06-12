@@ -14,6 +14,18 @@ public class Actor : MonoBehaviour
 
     public bool isGrounded;
 
+    public bool isAlive = true;
+
+    public float maxLife = 100.0f;
+    public float currentLife = 100.0f;
+
+    protected virtual void Start()
+    {
+        currentLife = maxLife;
+        isAlive = true;
+        baseAnim.SetBool("IsAlive", isAlive);
+    }
+
     public virtual void Update()
     {
         Vector3 shadowSpritePosition = shadowSprite.transform.position;
@@ -64,14 +76,59 @@ public class Actor : MonoBehaviour
     public virtual void DidHitObject(Collider collider, Vector3 hitPoint, Vector3 hitVector)
     {
         Actor actor = collider.GetComponent<Actor>();
-        if (actor != null) {
+        if (actor != null && actor.CanBeHit()) {
             if (collider.attachedRigidbody != null) {
                 HitActor(actor, hitPoint, hitVector);
             }
         }
     }
 
-    protected virtual void HitActor(Actor actor, Vector3 hitPoint, Vector3 hitVector) {
+    protected virtual void HitActor(Actor actor, Vector3 hitPoint, Vector3 hitVector)
+    {
         Debug.Log(gameObject.name + " HIT " + actor.gameObject.name);
+        actor.TakeDamage(10, hitVector);
+    }
+
+    protected virtual void Die()
+    {
+        isAlive = false;
+        baseAnim.SetBool("IsAlive", isAlive);
+        StartCoroutine(DeathFlicker());
+    }
+
+    protected virtual void SetOpacity(float value)
+    {
+        Color color = baseSprite.color;
+        color.a = value;
+        baseSprite.color = color;
+    }
+
+    private IEnumerator DeathFlicker()
+    {
+        int i = 5;
+        while (i > 0) {
+            SetOpacity(0.5f);
+            yield return new WaitForSeconds(0.1f);
+            SetOpacity(1.0f);
+            yield return new WaitForSeconds(0.1f);
+            i--;
+        }
+    }
+
+    public virtual void TakeDamage(float value, Vector3 hitVector)
+    {
+        FlipSprite(hitVector.x > 0);
+        currentLife -= value;
+
+        if (isAlive && currentLife <= 0) {
+            Die();
+        } else {
+            baseAnim.SetTrigger("IsHurt");
+        }
+    }
+
+    public bool CanBeHit()
+    {
+        return isAlive;
     }
 }
