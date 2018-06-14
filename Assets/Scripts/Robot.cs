@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class Robot : Actor
+public class Robot : Enemy
 {
     
 }
