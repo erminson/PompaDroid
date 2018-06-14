@@ -80,7 +80,7 @@ public class EnemyAI : MonoBehaviour
     private void Chase()
     {
         Vector3 directionVector = heroObj.transform.position - transform.position;
-        directionVector.y = directionVector.z = 0;
+        directionVector.z = directionVector.y = 0;
         directionVector.Normalize();
 
         directionVector *= -1f;
@@ -157,7 +157,7 @@ public class EnemyAI : MonoBehaviour
 
         if (action == EnemyAction.Attack) {
             Attack();
-        } else if (currentAction == EnemyAction.Chase) {
+        } else if (action == EnemyAction.Chase) {
             Chase();
         } else if (action == EnemyAction.Roam) {
             Roam();

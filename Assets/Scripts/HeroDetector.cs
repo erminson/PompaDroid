@@ -7,14 +7,14 @@ public class HeroDetector : MonoBehaviour
 
     public void OnTriggerEnter(Collider collider)
     {
-        if (collider.name == "Hero") {
+        if (collider.tag == "Hero") {
             heroIsNearby = true;
         }
     }
 
     public void OnTriggerExit(Collider collider)
     {
-        if (collider.name == "Hero") {
+        if (collider.tag == "Hero") {
             heroIsNearby = false;
         }
     }

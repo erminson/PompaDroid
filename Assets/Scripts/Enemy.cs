@@ -19,6 +19,7 @@ public class Enemy : Actor
     protected override void Die()
     {
         base.Die();
+        ai.enabled = false;
         walker.enabled = false;
         TotalEnemies--;
     }
