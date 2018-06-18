@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Actor : MonoBehaviour
 {
+    public float attackDamage = 10;
+
     public Animator baseAnim;
     public Rigidbody body;
     public SpriteRenderer shadowSprite;
@@ -76,7 +78,7 @@ public class Actor : MonoBehaviour
     public virtual void DidHitObject(Collider collider, Vector3 hitPoint, Vector3 hitVector)
     {
         Actor actor = collider.GetComponent<Actor>();
-        if (actor != null && actor.CanBeHit()) {
+        if (actor != null && actor.CanBeHit() && collider.tag != gameObject.tag) {
             if (collider.attachedRigidbody != null) {
                 HitActor(actor, hitPoint, hitVector);
             }
@@ -86,7 +88,7 @@ public class Actor : MonoBehaviour
     protected virtual void HitActor(Actor actor, Vector3 hitPoint, Vector3 hitVector)
     {
         Debug.Log(gameObject.name + " HIT " + actor.gameObject.name);
-        actor.TakeDamage(10, hitVector);
+        actor.TakeDamage(attackDamage, hitVector);
     }
 
     protected virtual void Die()
