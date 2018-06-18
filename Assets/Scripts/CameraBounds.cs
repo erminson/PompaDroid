@@ -11,7 +11,7 @@ public class CameraBounds : MonoBehaviour {
 
     public float cameraHalfWidth;
 
-    private Camera activeCamera;
+    public Camera activeCamera;
 
     public Transform cameraRoot;
 
@@ -38,7 +38,7 @@ public class CameraBounds : MonoBehaviour {
         rightBounds.transform.localPosition = position;
     }
 
-    public void SetPosition(float x) {
+    public void SetXPosition(float x) {
         Vector3 trans = cameraRoot.position;
         trans.x = Mathf.Clamp(x, minValue, maxValue);
         cameraRoot.position = trans;
