@@ -7,6 +7,7 @@ public class MainMenu : MonoBehaviour {
 	}
 
     public void GoToGame() {
+        GameManager.CurrenLevel = 0;
         SceneManager.LoadScene("Game");
     }
 }

@@ -1,9 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System;
 
 public class Hero : Actor
 {
+    public Walker walker;
+    public bool isAutoPiloting;
+    public bool controllable = true;
+
     public float walkSpeed = 2;
     public float runSpeed = 5;
 
@@ -42,6 +45,10 @@ public class Hero : Actor
         isJumpLandAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_land");
         isJumpingAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_rise") ||
                                 baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_fall");
+        
+        if (isAutoPiloting) {
+            return;
+        }
 
         float h = input.GetHorisontalAxis();
         float v = input.GetVerticalAxis();
@@ -51,27 +58,19 @@ public class Hero : Actor
         currentDir = new Vector3(h, 0, v);
         currentDir.Normalize();
 
-        if (!isAttackingAnim)
-        {
-            if (v == 0 && h == 0)
-            {
+        if (!isAttackingAnim) {
+            if (v == 0 && h == 0) {
                 Stop();
                 isMoving = false;
-            }
-            else if (!isMoving && (v != 0 || h != 0))
-            {
+            } else if (!isMoving && (v != 0 || h != 0)) {
                 isMoving = true;
                 float dotProduct = Vector3.Dot(currentDir, lastWalkVector);
 
-                if (canRun && Time.time < lastWalk + tapAgainToRunTime && dotProduct > 0)
-                {
+                if (canRun && Time.time < lastWalk + tapAgainToRunTime && dotProduct > 0) {
                     Run();
-                }
-                else
-                {
+                } else {
                     Walk();
-                    if (h != 0)
-                    {
+                    if (h != 0) {
                         lastWalkVector = currentDir;
                         lastWalk = Time.time;
                     }
@@ -80,13 +79,11 @@ public class Hero : Actor
         }
 
         if (jump && !isJumpLandAnim && !isAttackingAnim &&
-            (isGrounded || (isJumpingAnim && Time.time < lastJumpTime + jumpDuration)))
-        {
+            (isGrounded || (isJumpingAnim && Time.time < lastJumpTime + jumpDuration))) {
             Jump(currentDir);
         }
 
-        if (attack && Time.time >= lastAttackTime + attackLimit)
-        {
+        if (attack && Time.time >= lastAttackTime + attackLimit) {
             lastAttackTime = Time.time;
             Attack();
         }
@@ -134,22 +131,23 @@ public class Hero : Actor
     }
 
     void FixedUpdate() {
-        if (!isAlive) {
-            return;
-        }
-
-        Vector3 moveVector = currentDir * speed;
-
-        if (isGrounded && !isAttackingAnim) {
-            body.MovePosition(transform.position + moveVector * Time.fixedDeltaTime);
-            baseAnim.SetFloat("Speed", moveVector.magnitude);    
-        }
-
-        if (moveVector != Vector3.zero) {
-            if (moveVector.x != 0) {
-                isFacingLeft = moveVector.x < 0;
+        if (!isAutoPiloting) {
+            if (!isAlive) {
+                return;
             }
-            FlipSprite(isFacingLeft);
+
+            Vector3 moveVector = currentDir * speed;
+            if (isGrounded && !isAttackingAnim) {
+                body.MovePosition(transform.position + moveVector * Time.fixedDeltaTime);
+                baseAnim.SetFloat("Speed", moveVector.magnitude);
+            }
+
+            if (moveVector != Vector3.zero) {
+                if (moveVector.x != 0) {
+                    isFacingLeft = moveVector.x < 0;
+                }
+                FlipSprite(isFacingLeft);
+            }    
         }
     }
 
@@ -163,5 +161,21 @@ public class Hero : Actor
 
         Vector3 verticalVector = Vector3.up * jumpForce * Time.deltaTime;
         body.AddForce(verticalVector, ForceMode.Force);
+    }
+
+    public void AnimateTo(Vector3 position, bool shouldRun, Action callback)
+    {
+        if (shouldRun) {
+            Run();
+        } else {
+            Walk();
+        }
+        walker.MoveTo(position, callback);
+    }
+
+    public void UseAutopilot(bool useAutopilot)
+    {
+        isAutoPiloting = useAutopilot;
+        walker.enabled = useAutopilot;
     }
 }

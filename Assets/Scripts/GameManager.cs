@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,6 +8,10 @@ public class GameManager : MonoBehaviour
     public Hero actor;
     public bool cameraFollows = true;
     public CameraBounds cameraBounds;
+
+
+    public LevelData[] levels;
+    public static int CurrenLevel = 0;
 
     public LevelData currentLevelData;
     private BattleEvent currentBattleEvent;
@@ -20,12 +25,15 @@ public class GameManager : MonoBehaviour
 
     public GameObject robotPrefab;
 
+    public Transform walkInStartTarget;
+    public Transform walkInTarget;
+    public Transform walkOutTarget;
+
     void Start()
     {
         //cameraBounds.SetXPosition(cameraBounds.minVisibleX);
-
         nextEventIndex = 0;
-        StartCoroutine(LoadLevelData(currentLevelData));
+        StartCoroutine(LoadLevelData(levels[CurrenLevel]));
     }
 
     void Update()
@@ -89,7 +97,12 @@ public class GameManager : MonoBehaviour
         currentBattleEvent = null;
 
         cameraFollows = true;
+        cameraBounds.CalculateOffset(actor.transform.position.x);
         hasRemainingEvents = currentLevelData.battleData.Count > nextEventIndex;
+
+        if (!hasRemainingEvents) {
+            StartCoroutine(HeroWalkout());
+        }
     }
 
     private IEnumerator LoadLevelData(LevelData data) {
@@ -102,9 +115,59 @@ public class GameManager : MonoBehaviour
         yield return null;
         cameraBounds.SetXPosition(cameraBounds.minVisibleX);
 
+        if (currentLevelBackground != null) {
+            Destroy(currentLevelBackground);
+        }
         currentLevelBackground = Instantiate(currentLevelData.levelPrefab);
+
+        cameraBounds.EnableBounds(false);
+        actor.transform.position = walkInStartTarget.transform.position;
+        actor.UseAutopilot(true);
+        actor.AnimateTo(walkInTarget.transform.position, false, DidFinishIntro);
+
         yield return new WaitForSeconds(0.1f);
 
         cameraFollows = true;
+    }
+
+    private void DidFinishIntro()
+    {
+        actor.UseAutopilot(false);
+        actor.controllable = true;
+        cameraBounds.EnableBounds(true);
+    }
+
+    private IEnumerator HeroWalkout() 
+    {
+        cameraBounds.EnableBounds(false);
+        cameraFollows = false;
+
+        actor.UseAutopilot(true);
+        actor.controllable = false;
+        actor.AnimateTo(walkOutTarget.transform.position, true, DidFinishWalkout);
+
+        yield return null;
+    }
+
+    private void DidFinishWalkout()
+    {
+        CurrenLevel++;
+        if (CurrenLevel >= levels.Length) {
+            Debug.Log("Game Completed!");
+            SceneManager.LoadScene("MainMenu");
+        } else {
+            StartCoroutine(AnimateNextLevel());
+        }
+
+        cameraBounds.EnableBounds(true);
+        cameraFollows = false;
+        actor.UseAutopilot(false);
+        actor.controllable = false;
+    }
+
+    private IEnumerator AnimateNextLevel()
+    {
+        yield return null;
+        SceneManager.LoadScene("Game");
     }
 }

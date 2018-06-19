@@ -113,6 +113,34 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 23800000, guid: 977665967ee28430eaf65102945703d6, type: 2}
+--- !u!1 &31585867
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 31585868}
+  m_Layer: 0
+  m_Name: IntroStartMaker
+  m_TagString: Untagged
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &31585868
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 31585867}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -11.8, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 781385814}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &647082900
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,6 +290,9 @@ MonoBehaviour:
   actor: {fileID: 993526576}
   cameraFollows: 1
   cameraBounds: {fileID: 932364775}
+  levels:
+  - {fileID: 11400000, guid: 6da7d4ccf80e0b143ba78e4d6e02e8a8, type: 2}
+  - {fileID: 11400000, guid: ee1fb03240966c0488d902283df802f7, type: 2}
   currentLevelData: {fileID: 11400000, guid: 6da7d4ccf80e0b143ba78e4d6e02e8a8, type: 2}
   hasRemainingEvents: 0
   activeEnemise: []
@@ -274,6 +305,9 @@ MonoBehaviour:
   currentLevelBackground: {fileID: 0}
   robotPrefab: {fileID: 1807643810035896, guid: 1e14225a9eebd472195117c2b6374739,
     type: 2}
+  walkInStartTarget: {fileID: 31585868}
+  walkInTarget: {fileID: 1254337228}
+  walkOutTarget: {fileID: 1886874342}
 --- !u!4 &781385814
 Transform:
   m_ObjectHideFlags: 0
@@ -292,6 +326,9 @@ Transform:
   - {fileID: 1438705543}
   - {fileID: 1111352024}
   - {fileID: 924240040}
+  - {fileID: 31585868}
+  - {fileID: 1254337228}
+  - {fileID: 1886874342}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -428,6 +465,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 963be86405d724517a05eb8f5f4d1095, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  offset: 0
   minVisibleX: 5
   maxVisibleX: 96
   cameraHalfWidth: 0
@@ -435,6 +473,9 @@ MonoBehaviour:
   cameraRoot: {fileID: 781385814}
   leftBounds: {fileID: 1001632430}
   rightBounds: {fileID: 1239911911}
+  introWalkStart: {fileID: 31585868}
+  introWalkEnd: {fileID: 1254337228}
+  exitWalkEnd: {fileID: 1886874342}
 --- !u!1 &993526572
 GameObject:
   m_ObjectHideFlags: 0
@@ -444,8 +485,10 @@ GameObject:
   m_Component:
   - component: {fileID: 993526573}
   - component: {fileID: 993526576}
+  - component: {fileID: 993526578}
   - component: {fileID: 993526575}
   - component: {fileID: 993526574}
+  - component: {fileID: 993526577}
   m_Layer: 8
   m_Name: MyHero
   m_TagString: Hero
@@ -516,11 +559,47 @@ MonoBehaviour:
   isAlive: 1
   maxLife: 100
   currentLife: 100
+  walker: {fileID: 993526578}
+  isAutoPiloting: 0
+  controllable: 1
   walkSpeed: 2
   runSpeed: 5
   canRun: 1
   input: {fileID: 781385815}
   jumpForce: 1750
+--- !u!195 &993526577
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 993526572}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &993526578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 993526572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 620e361a9347a4e91b59331f679f46b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  navMeshAgent: {fileID: 993526577}
 --- !u!1 &1001632426
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,6 +798,34 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1239911910}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1254337227
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1254337228}
+  m_Layer: 0
+  m_Name: IntroEndMarker
+  m_TagString: Untagged
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1254337228
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1254337227}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -7.8, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 781385814}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1438705542
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,6 +1002,34 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
+--- !u!1 &1886874341
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1886874342}
+  m_Layer: 0
+  m_Name: ExitMarker
+  m_TagString: Untagged
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1886874342
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1886874341}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 12.8, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 781385814}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2128575943
 GameObject:
   m_ObjectHideFlags: 0
