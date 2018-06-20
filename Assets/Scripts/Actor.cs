@@ -2,9 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class AttackData
+{
+    public float attackDamage = 5;
+    public float force = 15;
+    public bool knockdown = false;
+}
+
 public class Actor : MonoBehaviour
 {
-    public float attackDamage = 10;
+    public AttackData normalAttack;
 
     public Animator baseAnim;
     public Rigidbody body;
@@ -58,13 +66,10 @@ public class Actor : MonoBehaviour
 
     public void FlipSprite(bool isFacingLeft)
     {
-        if (isFacingLeft)
-        {
+        if (isFacingLeft) {
             frontVector = new Vector3(-1, 0, 0);
             transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else
-        {
+        } else {
             frontVector = new Vector3(1, 0, 0);
             transform.localScale = new Vector3(1, 1, 1);
         }
@@ -88,7 +93,13 @@ public class Actor : MonoBehaviour
     protected virtual void HitActor(Actor actor, Vector3 hitPoint, Vector3 hitVector)
     {
         Debug.Log(gameObject.name + " HIT " + actor.gameObject.name);
-        actor.TakeDamage(attackDamage, hitVector);
+        actor.EvaluateAttackData(normalAttack, hitVector, hitPoint);
+    }
+
+    public virtual void EvaluateAttackData(AttackData data, Vector3 hitVector, Vector3 hitPoint)
+    {
+        body.AddForce(data.force * hitVector);
+        TakeDamage(data.attackDamage, hitVector);
     }
 
     protected virtual void Die()
