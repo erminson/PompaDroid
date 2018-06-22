@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections;
 
 public class Hero : Actor
 {
+    bool isHurtAnim;
+
     public Walker walker;
     public bool isAutoPiloting;
     public bool controllable = true;
@@ -33,6 +36,12 @@ public class Hero : Actor
     float lastAttackTime;
     float attackLimit = 0.14f;
 
+    public bool canJumpAttack = true;
+    private int currentAttackChain = 1;
+    public int evaluatedAttackChain = 0;
+
+    public AttackData jumpAttack;
+
     public override void Update()
     {
         base.Update();
@@ -41,11 +50,13 @@ public class Hero : Actor
             return;
         }
 
-        isAttackingAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("attack1");
+        isAttackingAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("attack1") ||
+                                  baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_attack");
         isJumpLandAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_land");
         isJumpingAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_rise") ||
                                 baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_fall");
-        
+        isHurtAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("hurt");
+
         if (isAutoPiloting) {
             return;
         }
@@ -78,12 +89,12 @@ public class Hero : Actor
             }
         }
 
-        if (jump && !isJumpLandAnim && !isAttackingAnim &&
+        if (jump && !isKnockedOut && !isJumpLandAnim && !isAttackingAnim &&
             (isGrounded || (isJumpingAnim && Time.time < lastJumpTime + jumpDuration))) {
             Jump(currentDir);
         }
 
-        if (attack && Time.time >= lastAttackTime + attackLimit) {
+        if (attack && Time.time >= lastAttackTime + attackLimit && !isKnockedOut) {
             lastAttackTime = Time.time;
             Attack();
         }
@@ -121,8 +132,24 @@ public class Hero : Actor
 
     public override void Attack()
     {
-        baseAnim.SetInteger("EvaluatedChain", 0);
-        baseAnim.SetInteger("CurrentChain", 1);
+        if (!isGrounded) {
+            if (isJumpingAnim && canJumpAttack) {
+                canJumpAttack = false;
+
+                currentAttackChain = 1;
+                evaluatedAttackChain = 0;
+                baseAnim.SetInteger("EvaluatedChain", evaluatedAttackChain);
+                baseAnim.SetInteger("CurrentChain", currentAttackChain);
+
+                body.velocity = Vector3.zero;
+                body.useGravity = false;
+            }
+        } else {
+            currentAttackChain = 1;
+            evaluatedAttackChain = 0;
+            baseAnim.SetInteger("EvaluatedChain", evaluatedAttackChain);
+            baseAnim.SetInteger("CurrentChain", currentAttackChain);    
+        }
     }
 
     public void DidChain(int chain)
@@ -130,19 +157,25 @@ public class Hero : Actor
         baseAnim.SetInteger("EvaluatedChain", chain);
     }
 
-    void FixedUpdate() {
+    public void DidJumpAttack()
+    {
+        body.useGravity = true;
+    }
+
+    void FixedUpdate()
+    {
         if (!isAutoPiloting) {
             if (!isAlive) {
                 return;
             }
 
             Vector3 moveVector = currentDir * speed;
-            if (isGrounded && !isAttackingAnim) {
+            if (isGrounded && !isAttackingAnim && !isJumpLandAnim && !isKnockedOut && !isHurtAnim) {
                 body.MovePosition(transform.position + moveVector * Time.fixedDeltaTime);
                 baseAnim.SetFloat("Speed", moveVector.magnitude);
             }
 
-            if (moveVector != Vector3.zero) {
+            if (moveVector != Vector3.zero && isGrounded && !isKnockedOut && !isAttackingAnim) {
                 if (moveVector.x != 0) {
                     isFacingLeft = moveVector.x < 0;
                 }
@@ -151,7 +184,13 @@ public class Hero : Actor
         }
     }
 
-    void Jump(Vector3 direction) {
+    public override bool CanWalk()
+    {
+        return (isGrounded && !isAttackingAnim && !isJumpLandAnim && !isKnockedOut && !isHurtAnim);
+    }
+
+    void Jump(Vector3 direction)
+    {
         if (!isJumpingAnim) {
             baseAnim.SetTrigger("Jump");
             lastJumpTime = Time.time;
@@ -177,5 +216,42 @@ public class Hero : Actor
     {
         isAutoPiloting = useAutopilot;
         walker.enabled = useAutopilot;
+    }
+
+    protected override void OnCollisionEnter(Collision collision)
+    {
+        base.OnCollisionEnter(collision);
+        if (collision.collider.name == "Floor") {
+            canJumpAttack = true;
+        }
+    }
+
+    private void AnalyzeSpecialAttack(AttackData attackData, Actor actor, Vector3 hitPoint, Vector3 hitVector)
+    {
+        actor.EvaluateAttackData(attackData, hitVector, hitPoint);
+    }
+
+    protected override void HitActor(Actor actor, Vector3 hitPoint, Vector3 hitVector)
+    {
+        if (baseAnim.GetCurrentAnimatorStateInfo(0).IsName("attack1")) {
+            base.HitActor(actor, hitPoint, hitVector);    
+        } else if (baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_attack")) {
+            AnalyzeSpecialAttack(jumpAttack, actor, hitPoint, hitVector);
+        }
+    }
+
+    public override void TakeDamage(float value, Vector3 hitVector, bool knockdown = false)
+    {
+        if (!isGrounded) {
+            knockdown = true;
+        }
+
+        base.TakeDamage(value, hitVector, knockdown);
+    }
+
+    protected override IEnumerator KnockdownRoutine()
+    {
+        body.useGravity = true;
+        return base.KnockdownRoutine();
     }
 }

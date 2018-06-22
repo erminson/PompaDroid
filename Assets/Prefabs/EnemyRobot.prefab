@@ -36,6 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4446238367724148}
   - component: {fileID: 95612632357003154}
+  - component: {fileID: 114150501542133518}
   m_Layer: 9
   m_Name: RobotAnimator
   m_TagString: Untagged
@@ -222,7 +223,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1807643810035896}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15, y: 0, z: 0}
+  m_LocalPosition: {x: 20.607496, y: 1.0206643, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4446238367724148}
@@ -314,6 +315,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114150501542133518
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1307664364860394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11135b915e23247289ac74d5d4670a60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actor: {fileID: 114531242475112142}
 --- !u!114 &114175115025279466
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -366,7 +379,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76a664c2ec8d3456a972a36cb472329d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 5
+  normalAttack:
+    attackDamage: 5
+    force: 15
+    knockdown: 0
   baseAnim: {fileID: 95612632357003154}
   body: {fileID: 54763967657524104}
   shadowSprite: {fileID: 212780018317267228}
@@ -376,6 +392,7 @@ MonoBehaviour:
   isAlive: 1
   maxLife: 231
   currentLife: 231
+  isKnockedOut: 0
   walker: {fileID: 114701564067285958}
   stopMovementWhenHit: 1
   ai: {fileID: 114346431549564846}
