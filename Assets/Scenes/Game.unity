@@ -590,6 +590,20 @@ MonoBehaviour:
     attackDamage: 20
     force: 120
     knockdown: 1
+  runAttack:
+    attackDamage: 20
+    force: 120
+    knockdown: 1
+  runAttackForce: 1.8
+  normalAttack2:
+    attackDamage: 10
+    force: 120
+    knockdown: 0
+  normalAttack3:
+    attackDamage: 20
+    force: 120
+    knockdown: 1
+  chainComboLimit: 0.3
 --- !u!195 &993526577
 NavMeshAgent:
   m_ObjectHideFlags: 0
