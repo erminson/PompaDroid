@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class AttackData
@@ -36,6 +36,7 @@ public class Actor : MonoBehaviour
 
     public LifeBar lifeBar;
     public Sprite actorThumbnail;
+    public GameObject hitValuePrefab;
 
     protected virtual void Start()
     {
@@ -202,5 +203,15 @@ public class Actor : MonoBehaviour
     {
         GameObject sparkObj = Instantiate(hitSparkPrefab);
         sparkObj.transform.position = position;
+
+        GameObject obj = Instantiate(hitValuePrefab) as GameObject;
+        obj.GetComponent<Text>().text = value.ToString();
+        obj.GetComponent<DestroyTimer>().EnableTimer(1.0f);
+
+        GameObject canvas = GameObject.FindGameObjectWithTag("WorldCanvas");
+        obj.transform.SetParent(canvas.transform);
+        obj.transform.localRotation = Quaternion.identity;
+        obj.transform.localScale = Vector3.one;
+        obj.transform.position = position;
     }
 }
