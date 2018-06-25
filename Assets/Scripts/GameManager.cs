@@ -5,10 +5,12 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
+    public LifeBar enemyLifeBar;
+    public GameObject goIndicator;
+
     public Hero actor;
     public bool cameraFollows = true;
     public CameraBounds cameraBounds;
-
 
     public LevelData[] levels;
     public static int CurrenLevel = 0;
@@ -100,8 +102,12 @@ public class GameManager : MonoBehaviour
         cameraBounds.CalculateOffset(actor.transform.position.x);
         hasRemainingEvents = currentLevelData.battleData.Count > nextEventIndex;
 
+        enemyLifeBar.EnableLifeBar(false);
+
         if (!hasRemainingEvents) {
             StartCoroutine(HeroWalkout());
+        } else {
+            ShowGoIndicator();
         }
     }
 
@@ -135,6 +141,8 @@ public class GameManager : MonoBehaviour
         actor.UseAutopilot(false);
         actor.controllable = true;
         cameraBounds.EnableBounds(true);
+
+        ShowGoIndicator();
     }
 
     private IEnumerator HeroWalkout() 
@@ -169,5 +177,22 @@ public class GameManager : MonoBehaviour
     {
         yield return null;
         SceneManager.LoadScene("Game");
+    }
+
+    private void ShowGoIndicator()
+    {
+        StartCoroutine(FlickerGoIndicator(4));
+    }
+
+    private IEnumerator FlickerGoIndicator(int count = 4)
+    {
+        while (count > 0)
+        {
+            goIndicator.SetActive(true);
+            yield return new WaitForSeconds(0.2f);
+            goIndicator.SetActive(false);
+            yield return new WaitForSeconds(0.2f);
+            count--;
+        }
     }
 }

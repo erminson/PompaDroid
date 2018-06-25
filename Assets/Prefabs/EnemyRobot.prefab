@@ -393,6 +393,9 @@ MonoBehaviour:
   maxLife: 231
   currentLife: 231
   isKnockedOut: 0
+  hitSparkPrefab: {fileID: 0}
+  lifeBar: {fileID: 0}
+  actorThumbnail: {fileID: 21300000, guid: 31818c14f425ab8469149caa748279f6, type: 3}
   walker: {fileID: 114701564067285958}
   stopMovementWhenHit: 1
   ai: {fileID: 114346431549564846}

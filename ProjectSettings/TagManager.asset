@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Hero
+  - HeroLifeBar
+  - EnemyLifeBar
   layers:
   - Default
   - TransparentFX

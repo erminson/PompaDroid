@@ -34,6 +34,9 @@ public class Actor : MonoBehaviour
 
     public GameObject hitSparkPrefab;
 
+    public LifeBar lifeBar;
+    public Sprite actorThumbnail;
+
     protected virtual void Start()
     {
         currentLife = maxLife;
@@ -154,6 +157,16 @@ public class Actor : MonoBehaviour
         } else {
             baseAnim.SetTrigger("IsHurt");
         }
+
+
+        lifeBar.EnableLifeBar(true);
+        lifeBar.SetProgress(currentLife / maxLife);
+        Color color = baseSprite.color;
+        if (currentLife < 0)
+        {
+            color.a = 0.75f;
+        }
+        lifeBar.SetThumbnail(actorThumbnail, color);
     }
 
     public bool CanBeHit()

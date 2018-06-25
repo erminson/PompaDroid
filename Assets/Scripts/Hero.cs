@@ -55,6 +55,15 @@ public class Hero : Actor
     public float hurtLimit = 20;
     public float recoveryRate = 5;
 
+
+    protected override void Start()
+    {
+        base.Start();
+
+        lifeBar = GameObject.FindGameObjectWithTag("HeroLifeBar").GetComponent<LifeBar>();
+        lifeBar.SetProgress(currentLife / maxLife);
+    }
+
     public override void Update()
     {
         base.Update();

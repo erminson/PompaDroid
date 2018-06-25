@@ -11,6 +11,13 @@ public class Enemy : Actor
 
     public EnemyAI ai;
 
+    protected override void Start()
+    {
+        base.Start();
+        lifeBar = GameObject.FindGameObjectWithTag("EnemyLifeBar").GetComponent<LifeBar>();
+        lifeBar.SetProgress(currentLife / maxLife);
+    }
+
     public void RegisterEnemy()
     {
         TotalEnemies++;
