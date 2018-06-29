@@ -38,6 +38,8 @@ public class Actor : MonoBehaviour
     public Sprite actorThumbnail;
     public GameObject hitValuePrefab;
 
+    protected bool canFlinch = true;
+
     protected virtual void Start()
     {
         currentLife = maxLife;
@@ -147,18 +149,23 @@ public class Actor : MonoBehaviour
         FlipSprite(hitVector.x > 0);
         currentLife -= value;
 
-        if (isAlive && currentLife <= 0) {
+        if (isAlive && currentLife <= 0)
+        {
             Die();
-        } else if (knockdown) {
-            if (knockdownRoutine == null) {
+        } 
+        else if (knockdown) 
+        {
+            if (knockdownRoutine == null)
+            {
                 Vector3 pushbackVector = (hitVector + Vector3.up * 0.75f).normalized;
                 body.AddForce(pushbackVector * 250);
                 knockdownRoutine = StartCoroutine(KnockdownRoutine());
             }
-        } else {
+        } 
+        else if (canFlinch)
+        {
             baseAnim.SetTrigger("IsHurt");
         }
-
 
         lifeBar.EnableLifeBar(true);
         lifeBar.SetProgress(currentLife / maxLife);

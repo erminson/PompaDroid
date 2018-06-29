@@ -1,11 +1,12 @@
 ﻿<Properties StartupConfiguration="{26804663-A0DF-15AD-C8DA-B46D54F32CE7}|">
   <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Hero.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/HeroDetector.cs">
     <Files>
-      <File FileName="Assets/Scripts/InputHandler.cs" Line="28" Column="22" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="47" Column="10" />
-      <File FileName="Assets/Scripts/ActionDPad.cs" Line="148" Column="2" />
-      <File FileName="Assets/Scripts/Hero.cs" Line="9" Column="26" />
+      <File FileName="Assets/Scripts/Actor.cs" Line="172" Column="9" />
+      <File FileName="Assets/Scripts/Boss.cs" Line="14" Column="50" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="88" Column="46" />
+      <File FileName="Assets/Scripts/ActorCallback.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/HeroDetector.cs" Line="22" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
