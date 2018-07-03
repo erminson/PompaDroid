@@ -7,7 +7,6 @@ public class HitForwarder : MonoBehaviour
 
     void OnTriggerEnter(Collider hitCollider)
     {
-        Debug.Log("OnTriggerEnter");
         Vector3 direction = new Vector3(hitCollider.transform.position.x - actor.transform.position.x, 0, 0);
         direction.Normalize();
 

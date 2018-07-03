@@ -55,6 +55,16 @@ public class Hero : Actor
     public float hurtLimit = 20;
     public float recoveryRate = 5;
 
+    bool isPickingUpAnim;
+    bool weaponDropPressed = false;
+    public bool hasWeapon;
+
+    public bool canJump = true;
+
+    public SpriteRenderer powerupSprite;
+    public Powerup nearbyPowerup;
+    public Powerup currentPowerup;
+    public GameObject powerupRoot;
 
     protected override void Start()
     {
@@ -83,8 +93,10 @@ public class Hero : Actor
         isJumpingAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_rise") ||
                                 baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_fall");
         isHurtAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("hurt");
+        isPickingUpAnim = baseAnim.GetCurrentAnimatorStateInfo(0).IsName("pickup");
 
-        if (isAutoPiloting) {
+        if (isAutoPiloting)
+        {
             return;
         }
 
@@ -96,19 +108,27 @@ public class Hero : Actor
         currentDir = new Vector3(h, 0, v);
         currentDir.Normalize();
 
-        if (!isAttackingAnim) {
-            if (v == 0 && h == 0) {
+        if (!isAttackingAnim)
+        {
+            if (v == 0 && h == 0)
+            {
                 Stop();
                 isMoving = false;
-            } else if (!isMoving && (v != 0 || h != 0)) {
+            } 
+            else if (!isMoving && (v != 0 || h != 0))
+            {
                 isMoving = true;
                 float dotProduct = Vector3.Dot(currentDir, lastWalkVector);
 
-                if (canRun && Time.time < lastWalk + tapAgainToRunTime && dotProduct > 0) {
+                if (canRun && Time.time < lastWalk + tapAgainToRunTime && dotProduct > 0)
+                {
                     Run();
-                } else {
+                } 
+                else
+                {
                     Walk();
-                    if (h != 0) {
+                    if (h != 0)
+                    {
                         lastWalkVector = currentDir;
                         lastWalk = Time.time;
                     }
@@ -116,10 +136,12 @@ public class Hero : Actor
             }
         }
 
-        if (chainComboTimer > 0) {
+        if (chainComboTimer > 0)
+        {
             chainComboTimer -= Time.deltaTime;
 
-            if (chainComboTimer < 0) {
+            if (chainComboTimer < 0)
+            {
                 chainComboTimer = 0;
                 currentAttackChain = 0;
                 evaluatedAttackChain = 0;
@@ -128,12 +150,36 @@ public class Hero : Actor
             }
         }
 
-        if (jump && !isKnockedOut && !isJumpLandAnim && !isAttackingAnim &&
+        if (jump && hasWeapon)
+        {
+            weaponDropPressed = true;
+            DropWeapon();
+        }
+
+        if (weaponDropPressed && !jump)
+        {
+            weaponDropPressed = false;
+        }
+
+        if (canJump && jump && !isKnockedOut && 
+            !isJumpLandAnim && !isAttackingAnim &&
+            !isPickingUpAnim && !weaponDropPressed &&
             (isGrounded || (isJumpingAnim && Time.time < lastJumpTime + jumpDuration))) {
             Jump(currentDir);
         }
 
-        if (attack && Time.time >= lastAttackTime + attackLimit && !isKnockedOut) {
+        if (attack && Time.time >= lastAttackTime + attackLimit && isGrounded && !isPickingUpAnim)
+        {
+            if (nearbyPowerup != null && nearbyPowerup.CanEquip())
+            {
+                lastAttackTime = Time.time;
+                Stop();
+                PickupWeapon(nearbyPowerup);
+            }
+        }
+
+        if (attack && Time.time >= lastAttackTime + attackLimit && !isKnockedOut && !isPickingUpAnim)
+        {
             lastAttackTime = Time.time;
             Attack();
         }
@@ -143,7 +189,6 @@ public class Hero : Actor
             hurtTolerance += Time.deltaTime * recoveryRate;
             hurtTolerance = Mathf.Clamp(hurtLimit, 0, hurtLimit);
         }
-
     }
 
     protected override void DidLand()
@@ -304,15 +349,31 @@ public class Hero : Actor
     {
         if (baseAnim.GetCurrentAnimatorStateInfo(0).IsName("attack1"))
         {
-            AnalyzeNormalAttack(normalAttack, 2, actor, hitPoint, hitVector);
+            AttackData attackData = hasWeapon ? currentPowerup.attackData1 : normalAttack;
+            AnalyzeNormalAttack(attackData, 2, actor, hitPoint, hitVector);
+            if (hasWeapon)
+            {
+                Debug.Log("HitActor — attack1 - hasWeapon");
+                currentPowerup.Use();
+            }
         }
         else if (baseAnim.GetCurrentAnimatorStateInfo(0).IsName("attack2"))
         {
-            AnalyzeNormalAttack(normalAttack2, 3, actor, hitPoint, hitVector);
+            AttackData attackData = hasWeapon ? currentPowerup.attackData2 : normalAttack2;
+            AnalyzeNormalAttack(attackData, 3, actor, hitPoint, hitVector);
+            if (hasWeapon)
+            {
+                currentPowerup.Use();
+            }
         }
         else if (baseAnim.GetCurrentAnimatorStateInfo(0).IsName("attack3"))
         {
-            AnalyzeNormalAttack(normalAttack3, 1, actor, hitPoint, hitVector);
+            AttackData attackData = hasWeapon ? currentPowerup.attackData3 : normalAttack3;
+            AnalyzeNormalAttack(attackData, 1, actor, hitPoint, hitVector);
+            if (hasWeapon)
+            {
+                currentPowerup.Use();
+            }
         }
         else if (baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_attack"))
         {
@@ -333,6 +394,11 @@ public class Hero : Actor
             knockdown = true;
         }
 
+        if (hasWeapon)
+        {
+            DropWeapon();
+        }
+
         base.TakeDamage(value, hitVector, knockdown);
     }
 
@@ -347,5 +413,75 @@ public class Hero : Actor
         actor.EvaluateAttackData(attackData, hitVector, hitPoint);
         currentAttackChain = attackChain;
         chainComboTimer = chainComboLimit;
+    }
+
+    public void PickupWeapon(Powerup powerup)
+    {
+        baseAnim.SetTrigger("PickupPowerup");
+    }
+
+    public void DidPickupWeapon()
+    {
+        if (nearbyPowerup != null && nearbyPowerup.CanEquip())
+        {
+
+            Debug.Log("DidPickupWeapon");
+            Powerup powerup = nearbyPowerup;
+            hasWeapon = true;
+            currentPowerup = powerup;
+            nearbyPowerup = null;
+            powerupRoot = currentPowerup.rootObject;
+            powerup.user = this;
+
+            currentPowerup.body.velocity = Vector3.zero;
+            powerupRoot.SetActive(false);
+            Walk();
+
+            powerupSprite.enabled = true;
+            canRun = false;
+            canJump = false;
+        }
+    }
+
+    public void DropWeapon()
+    {
+        Debug.Log("DropWeapon");
+        powerupRoot.SetActive(true);
+        powerupRoot.transform.position = transform.position + Vector3.up;
+        currentPowerup.body.AddForce(Vector3.up * 100);
+
+        powerupRoot = null;
+        currentPowerup.user = null;
+        currentPowerup = null;
+        nearbyPowerup = null;
+
+        powerupSprite.enabled = false;
+        canRun = true;
+        hasWeapon = false;
+        canJump = true;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Powerup"))
+        {
+            Powerup powerup = other.gameObject.GetComponent<Powerup>();
+            if (powerup != null)
+            {
+                nearbyPowerup = powerup;
+            }
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Powerup"))
+        {
+            Powerup powerup = other.gameObject.GetComponent<Powerup>();
+            if (powerup == nearbyPowerup)
+            {
+                nearbyPowerup = null;
+            }
+        }
     }
 }

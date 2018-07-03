@@ -393,7 +393,7 @@ MonoBehaviour:
   maxLife: 231
   currentLife: 231
   isKnockedOut: 0
-  hitSparkPrefab: {fileID: 0}
+  hitSparkPrefab: {fileID: 130454, guid: 715ddbe02ee192b4c885c438cf4a86ba, type: 2}
   lifeBar: {fileID: 0}
   actorThumbnail: {fileID: 21300000, guid: 31818c14f425ab8469149caa748279f6, type: 3}
   hitValuePrefab: {fileID: 146428, guid: e9b5c0ddbae7d114fa0170b412f3ab85, type: 2}

@@ -1,0 +1,17 @@
+﻿<Properties StartupConfiguration="{F7E9768E-B72A-3479-F73E-9F42B9023AD1}|">
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Actor.cs">
+    <Files>
+      <File FileName="Assets/Scripts/Powerup.cs" Line="51" Column="17" />
+      <File FileName="Assets/Scripts/Hero.cs" Line="419" Column="22" />
+      <File FileName="Assets/Scripts/HitForwarder.cs" Line="9" Column="6" />
+      <File FileName="Assets/Scripts/Actor.cs" Line="110" Column="25" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>

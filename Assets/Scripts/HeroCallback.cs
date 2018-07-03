@@ -13,4 +13,9 @@ public class HeroCallback : MonoBehaviour
     {
         hero.DidJumpAttack();
     }
+
+    public void DidPickup()
+    {
+        hero.DidPickupWeapon();
+    }
 }
