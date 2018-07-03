@@ -484,4 +484,22 @@ public class Hero : Actor
             }
         }
     }
+
+    public override void DidHitObject(Collider collider, Vector3 hitPoint, Vector3 hitVector)
+    {
+        Container containerObject = collider.GetComponent<Container>();
+
+        if (containerObject != null)
+        {
+            containerObject.Hit(hitPoint);
+            if (containerObject.CanBeOpened() && collider.tag != gameObject.tag)
+            {
+                containerObject.Open(hitPoint);
+            }
+        }
+        else
+        {
+            base.DidHitObject(collider, hitPoint, hitVector);
+        }
+    }
 }
