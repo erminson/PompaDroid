@@ -66,6 +66,11 @@ public class Hero : Actor
     public Powerup currentPowerup;
     public GameObject powerupRoot;
 
+    public AudioClip hit2Clip;
+
+    public GameManager gameManager;
+    public JumpCollider jumpCollider;
+
     protected override void Start()
     {
         base.Start();
@@ -161,7 +166,8 @@ public class Hero : Actor
             weaponDropPressed = false;
         }
 
-        if (canJump && jump && !isKnockedOut && 
+        if (canJump && jump && !isKnockedOut &&
+            jumpCollider.CanJump(currentDir, frontVector) &&
             !isJumpLandAnim && !isAttackingAnim &&
             !isPickingUpAnim && !weaponDropPressed &&
             (isGrounded || (isJumpingAnim && Time.time < lastJumpTime + jumpDuration))) {
@@ -351,6 +357,7 @@ public class Hero : Actor
         {
             AttackData attackData = hasWeapon ? currentPowerup.attackData1 : normalAttack;
             AnalyzeNormalAttack(attackData, 2, actor, hitPoint, hitVector);
+            PlaySFX(hitClip);
             if (hasWeapon)
             {
                 Debug.Log("HitActor — attack1 - hasWeapon");
@@ -361,6 +368,7 @@ public class Hero : Actor
         {
             AttackData attackData = hasWeapon ? currentPowerup.attackData2 : normalAttack2;
             AnalyzeNormalAttack(attackData, 3, actor, hitPoint, hitVector);
+            PlaySFX(hitClip);
             if (hasWeapon)
             {
                 currentPowerup.Use();
@@ -370,6 +378,7 @@ public class Hero : Actor
         {
             AttackData attackData = hasWeapon ? currentPowerup.attackData3 : normalAttack3;
             AnalyzeNormalAttack(attackData, 1, actor, hitPoint, hitVector);
+            PlaySFX(hit2Clip);
             if (hasWeapon)
             {
                 currentPowerup.Use();
@@ -378,10 +387,12 @@ public class Hero : Actor
         else if (baseAnim.GetCurrentAnimatorStateInfo(0).IsName("jump_attack"))
         {
             AnalyzeSpecialAttack(jumpAttack, actor, hitPoint, hitVector);
+            PlaySFX(hit2Clip);
         } 
         else if (baseAnim.GetCurrentAnimatorStateInfo(0).IsName("run_attack"))
         {
             AnalyzeSpecialAttack(runAttack, actor, hitPoint, hitVector);
+            PlaySFX(hit2Clip);
         }
     }
 
@@ -492,6 +503,7 @@ public class Hero : Actor
         if (containerObject != null)
         {
             containerObject.Hit(hitPoint);
+            PlaySFX(hitClip);
             if (containerObject.CanBeOpened() && collider.tag != gameObject.tag)
             {
                 containerObject.Open(hitPoint);
@@ -501,5 +513,11 @@ public class Hero : Actor
         {
             base.DidHitObject(collider, hitPoint, hitVector);
         }
+    }
+
+    protected override void Die()
+    {
+        base.Die();
+        gameManager.GameOver();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -28,9 +29,21 @@ public class GameManager : MonoBehaviour
     public GameObject robotPrefab;
     public GameObject bossPrefab;
 
+    public GameObject levelNamePrefab;
+    public GameObject gameOverPrefab;
+
+    public RectTransform uiTransform;
+
     public Transform walkInStartTarget;
     public Transform walkInTarget;
     public Transform walkOutTarget;
+
+    public GameObject loadingScreen;
+
+    void Awake()
+    {
+        loadingScreen.SetActive(true);    
+    }
 
     void Start()
     {
@@ -143,6 +156,8 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         cameraFollows = true;
+        ShowTextBanner(currentLevelData.levelName);
+        loadingScreen.SetActive(false);
     }
 
     private void DidFinishIntro()
@@ -170,8 +185,7 @@ public class GameManager : MonoBehaviour
     {
         CurrenLevel++;
         if (CurrenLevel >= levels.Length) {
-            Debug.Log("Game Completed!");
-            SceneManager.LoadScene("MainMenu");
+            Victory();
         } else {
             StartCoroutine(AnimateNextLevel());
         }
@@ -184,7 +198,8 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator AnimateNextLevel()
     {
-        yield return null;
+        ShowTextBanner(currentLevelData.levelName + " COMPLETED");
+        yield return new WaitForSeconds(3.0f);
         SceneManager.LoadScene("Game");
     }
 
@@ -203,5 +218,30 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(0.2f);
             count--;
         }
+    }
+
+    private void ShowBanner(string bannerText, GameObject prefab)
+    {
+        GameObject obj = Instantiate(prefab);
+        obj.GetComponent<Text>().text = bannerText;
+        RectTransform rectTransform = obj.transform as RectTransform;
+        rectTransform.SetParent(uiTransform);
+        rectTransform.localScale = Vector3.one;
+        rectTransform.anchoredPosition = Vector2.zero;
+    }
+
+    public void GameOver()
+    {
+        ShowBanner("GAME OVER", gameOverPrefab);
+    }
+
+    public void Victory()
+    {
+        ShowBanner("YOU WON", gameOverPrefab);
+    }
+
+    public void ShowTextBanner(string levelName)
+    {
+        ShowBanner(levelName, levelNamePrefab);
     }
 }

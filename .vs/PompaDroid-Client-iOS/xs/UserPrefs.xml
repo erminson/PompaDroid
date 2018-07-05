@@ -1,10 +1,11 @@
 ﻿<Properties StartupConfiguration="{F7E9768E-B72A-3479-F73E-9F42B9023AD1}|">
   <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Hero.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Actor.cs">
     <Files>
-      <File FileName="Assets/Scripts/Hero.cs" Line="496" Column="17" />
-      <File FileName="Assets/Scripts/Actor.cs" Line="111" Column="6" />
-      <File FileName="Assets/Scripts/Container.cs" Line="29" Column="39" />
+      <File FileName="Assets/Scripts/JumpColliderItem.cs" Line="3" Column="1" />
+      <File FileName="Assets/Scripts/JumpCollider.cs" Line="16" Column="9" />
+      <File FileName="Assets/Scripts/Hero.cs" Line="170" Column="54" />
+      <File FileName="Assets/Scripts/Actor.cs" Line="16" Column="5" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

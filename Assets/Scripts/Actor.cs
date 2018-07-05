@@ -38,6 +38,11 @@ public class Actor : MonoBehaviour
     public Sprite actorThumbnail;
     public GameObject hitValuePrefab;
 
+    public AudioClip deathClip;
+    public AudioClip hitClip;
+
+    public AudioSource audioSource;
+
     protected bool canFlinch = true;
 
     protected virtual void Start()
@@ -105,6 +110,7 @@ public class Actor : MonoBehaviour
     {
         Debug.Log(gameObject.name + " HIT " + actor.gameObject.name);
         actor.EvaluateAttackData(normalAttack, hitVector, hitPoint);
+        PlaySFX(hitClip);
     }
 
     public virtual void EvaluateAttackData(AttackData data, Vector3 hitVector, Vector3 hitPoint)
@@ -123,6 +129,7 @@ public class Actor : MonoBehaviour
         isAlive = false;
         baseAnim.SetBool("IsAlive", isAlive);
         StartCoroutine(DeathFlicker());
+        PlaySFX(deathClip);
     }
 
     protected virtual void SetOpacity(float value)
@@ -220,5 +227,10 @@ public class Actor : MonoBehaviour
         obj.transform.localRotation = Quaternion.identity;
         obj.transform.localScale = Vector3.one;
         obj.transform.position = position;
+    }
+
+    public void PlaySFX(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
     }
 }
