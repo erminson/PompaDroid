@@ -42,6 +42,7 @@ public class Actor : MonoBehaviour
     public AudioClip hitClip;
 
     public AudioSource audioSource;
+    protected ActorCollider actorCollider;
 
     protected bool canFlinch = true;
 
@@ -50,6 +51,8 @@ public class Actor : MonoBehaviour
         currentLife = maxLife;
         isAlive = true;
         baseAnim.SetBool("IsAlive", isAlive);
+        actorCollider = GetComponent<ActorCollider>();
+        actorCollider.SetColliderStance(true);
     }
 
     public virtual void Update()
@@ -76,8 +79,8 @@ public class Actor : MonoBehaviour
         }
     }
 
-    protected virtual void DidLand() {
-        
+    protected virtual void DidLand()
+    {
     }
 
     public void FlipSprite(bool isFacingLeft)
@@ -99,8 +102,10 @@ public class Actor : MonoBehaviour
     public virtual void DidHitObject(Collider collider, Vector3 hitPoint, Vector3 hitVector)
     {
         Actor actor = collider.GetComponent<Actor>();
-        if (actor != null && actor.CanBeHit() && collider.tag != gameObject.tag) {
-            if (collider.attachedRigidbody != null) {
+        if (actor != null && actor.CanBeHit() && collider.tag != gameObject.tag)
+        {
+            if (collider.attachedRigidbody != null)
+            {
                 HitActor(actor, hitPoint, hitVector);
             }
         }
@@ -130,6 +135,7 @@ public class Actor : MonoBehaviour
         baseAnim.SetBool("IsAlive", isAlive);
         StartCoroutine(DeathFlicker());
         PlaySFX(deathClip);
+        actorCollider.SetColliderStance(false);
     }
 
     protected virtual void SetOpacity(float value)
@@ -208,7 +214,9 @@ public class Actor : MonoBehaviour
     {
         isKnockedOut = true;
         baseAnim.SetTrigger("Knockdown");
+        actorCollider.SetColliderStance(false);
         yield return new WaitForSeconds(1.0f);
+        actorCollider.SetColliderStance(true);
         baseAnim.SetTrigger("GetUp");
         knockdownRoutine = null;
     }

@@ -151,7 +151,7 @@ GameObject:
   - component: {fileID: 32716214}
   - component: {fileID: 32716216}
   - component: {fileID: 32716215}
-  m_Layer: 8
+  m_Layer: 14
   m_Name: Far
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -382,7 +382,7 @@ GameObject:
   - component: {fileID: 460888066}
   - component: {fileID: 460888068}
   - component: {fileID: 460888067}
-  m_Layer: 8
+  m_Layer: 14
   m_Name: Front
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1189,7 +1189,7 @@ GameObject:
   - component: {fileID: 923648432}
   - component: {fileID: 923648434}
   - component: {fileID: 923648433}
-  m_Layer: 8
+  m_Layer: 14
   m_Name: Near
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1379,6 +1379,7 @@ GameObject:
   - component: {fileID: 993526574}
   - component: {fileID: 993526577}
   - component: {fileID: 993526579}
+  - component: {fileID: 993526580}
   m_Layer: 8
   m_Name: MyHero
   m_TagString: Hero
@@ -1500,7 +1501,7 @@ MonoBehaviour:
   powerupRoot: {fileID: 0}
   hit2Clip: {fileID: 8300000, guid: 8a52d845131c2f2459d934816680a536, type: 3}
   gameManager: {fileID: 781385813}
-  jumpCollider: {fileID: 0}
+  jumpCollider: {fileID: 1765795276}
 --- !u!195 &993526577
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1629,6 +1630,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &993526580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 993526572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 815bc3213ce0246deb6650f00025a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  standingColliderCenter: {x: 0, y: 1.2, z: 0}
+  standingCollederSize: {x: 1, y: 2.4, z: 0.5}
+  downColliderCenter: {x: -1, y: 0.5, z: 0}
+  downColliderSize: {x: 2.4, y: 1, z: 0.5}
 --- !u!1 &1001632426
 GameObject:
   m_ObjectHideFlags: 0
